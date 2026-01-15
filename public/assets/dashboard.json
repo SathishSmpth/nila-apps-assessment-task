@@ -118,6 +118,7 @@
           "female": 10000,
           "others": 500,
           "passed": 15000,
+          "failed": 5000,
           "assessmentCompleted": 18563,
           "completionRatePercent": 68
         },
@@ -129,6 +130,7 @@
           "female": 9500,
           "others": 500,
           "passed": 14200,
+          "failed": 5000,
           "assessmentCompleted": 17000,
           "completionRatePercent": 65
         },
@@ -140,6 +142,7 @@
           "female": 9000,
           "others": 500,
           "passed": 13000,
+          "failed": 5000,
           "assessmentCompleted": 16000,
           "completionRatePercent": 64
         },
@@ -151,6 +154,7 @@
           "female": 8000,
           "others": 500,
           "passed": 12000,
+          "failed": 5000,
           "assessmentCompleted": 15000,
           "completionRatePercent": 63
         },
@@ -162,6 +166,7 @@
           "female": 7500,
           "others": 500,
           "passed": 11500,
+          "failed": 5000,
           "assessmentCompleted": 14500,
           "completionRatePercent": 62
         },
@@ -173,6 +178,7 @@
           "female": 7000,
           "others": 500,
           "passed": 10800,
+          "failed": 5000,
           "assessmentCompleted": 13800,
           "completionRatePercent": 61
         },
@@ -184,6 +190,7 @@
           "female": 6500,
           "others": 500,
           "passed": 10000,
+          "failed": 5000,
           "assessmentCompleted": 13000,
           "completionRatePercent": 60
         },
@@ -195,6 +202,7 @@
           "female": 6000,
           "others": 500,
           "passed": 9500,
+          "failed": 5000,
           "assessmentCompleted": 12500,
           "completionRatePercent": 59
         },
@@ -206,6 +214,7 @@
           "female": 5500,
           "others": 500,
           "passed": 8800,
+          "failed": 5000,
           "assessmentCompleted": 11800,
           "completionRatePercent": 58
         },
@@ -217,6 +226,7 @@
           "female": 5000,
           "others": 500,
           "passed": 8200,
+          "failed": 5000,
           "assessmentCompleted": 11200,
           "completionRatePercent": 57
         }
@@ -342,6 +352,7 @@
           "female": 11800,
           "others": 325,
           "passed": 19000,
+          "failed": 5000,
           "assessmentCompleted": 24500,
           "completionRatePercent": 87
         },
@@ -353,6 +364,7 @@
           "female": 12000,
           "others": 500,
           "passed": 17750,
+          "failed": 5000,
           "assessmentCompleted": 22500,
           "completionRatePercent": 86
         },
@@ -364,6 +376,7 @@
           "female": 11375,
           "others": 500,
           "passed": 16500,
+          "failed": 5000,
           "assessmentCompleted": 21000,
           "completionRatePercent": 86
         },
@@ -375,6 +388,7 @@
           "female": 10200,
           "others": 500,
           "passed": 15500,
+          "failed": 5000,
           "assessmentCompleted": 19800,
           "completionRatePercent": 88
         },
@@ -386,6 +400,7 @@
           "female": 9500,
           "others": 500,
           "passed": 14800,
+          "failed": 5000,
           "assessmentCompleted": 19000,
           "completionRatePercent": 89
         },
@@ -397,6 +412,7 @@
           "female": 9000,
           "others": 500,
           "passed": 14000,
+          "failed": 5000,
           "assessmentCompleted": 18000,
           "completionRatePercent": 90
         },
@@ -408,6 +424,7 @@
           "female": 8250,
           "others": 500,
           "passed": 13250,
+          "failed": 5000,
           "assessmentCompleted": 17000,
           "completionRatePercent": 91
         },
@@ -419,6 +436,7 @@
           "female": 8625,
           "others": 500,
           "passed": 12500,
+          "failed": 5000,
           "assessmentCompleted": 16250,
           "completionRatePercent": 93
         },
@@ -430,6 +448,7 @@
           "female": 7000,
           "others": 500,
           "passed": 11750,
+          "failed": 5000,
           "assessmentCompleted": 15250,
           "completionRatePercent": 94
         },
@@ -441,6 +460,7 @@
           "female": 6375,
           "others": 500,
           "passed": 11000,
+          "failed": 5000,
           "assessmentCompleted": 14250,
           "completionRatePercent": 95
         }

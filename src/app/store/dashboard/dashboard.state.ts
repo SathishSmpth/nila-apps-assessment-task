@@ -6,7 +6,7 @@ import { DashboardState } from './dashboard.model';
 const initialState: DashboardState = {
   year: '2024',
   monthlyOrYearly: 'Monthly',
-  districts: 'All Districts',
+  district: 'All Districts',
   theme: 'light',
 };
 
@@ -23,5 +23,9 @@ export const dashboardReducer = createReducer(
   on(DashboardActions.setTheme, (state, action) => ({
     ...state,
     theme: action.theme,
+  })),
+  on(DashboardActions.setDistrict, (state, action) => ({
+    ...state,
+    district: action.district,
   }))
 );

@@ -1,8 +1,8 @@
 import { Component, inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
-import { Subject, take, takeUntil } from 'rxjs';
+import { combineLatest, Subject, take, takeUntil } from 'rxjs';
 import { DashboardService } from '../../../services/dashboard.service';
 import { Store } from '@ngrx/store';
-import { selectTheme, selectYear } from '../../../store';
+import { selectDistrict, selectTheme, selectYear } from '../../../store';
 import { DistrictRankingModel } from '../../../model';
 import { MatCardModule } from '@angular/material/card';
 import { NgxEchartsDirective } from 'ngx-echarts';
@@ -37,27 +37,32 @@ export class DistrictRanking implements OnInit, OnDestroy {
   option: WritableSignal<any> = signal(null);
 
   ngOnInit(): void {
-    this.store
-      .select(selectYear)
+    combineLatest([
+      this.store.select(selectYear),
+      this.store.select(selectDistrict),
+      this.store.select(selectTheme),
+    ])
       .pipe(takeUntil(this.destroy$))
-      .subscribe((year) => {
-        this.getDistrictRanking(year);
-      });
-    this.store
-      .select(selectTheme)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((theme) => {
+      .subscribe(([year, district, theme]) => {
+        this.theme.set(theme);
+        this.getDistrictRanking(year, district);
         const data = this.districtRanking();
-        if (theme && data) {
-          this.theme.set(theme);
+        if (data) {
           this.buildChartOption(data, theme);
         }
       });
+
+    this.formControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+      const data = this.districtRanking();
+      if (value && data) {
+        this.buildChartOption(data, this.theme());
+      }
+    });
   }
 
-  getDistrictRanking(year: string) {
+  getDistrictRanking(year: string, district: string) {
     this.dashboardService
-      .getDistrictRanking(year)
+      .getDistrictRanking(year, district)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.districtRanking.set(data);
@@ -69,6 +74,18 @@ export class DistrictRanking implements OnInit, OnDestroy {
 
   buildChartOption(data: DistrictRankingModel, theme: string) {
     const isDark = theme == 'dark';
+    const rankBy = this.formControl.value;
+
+    const sortedDistricts = [...data.districts].sort((a, b) => {
+      if (rankBy === 'Rank By Pass %') {
+        const passA = (a.passed / a.enrolled) * 100;
+        const passB = (b.passed / b.enrolled) * 100;
+        return passB - passA;
+      }
+
+      return b.enrolled - a.enrolled;
+    });
+
     const districtRankingOption = {
       tooltip: {
         trigger: 'axis',
@@ -97,7 +114,7 @@ export class DistrictRanking implements OnInit, OnDestroy {
           fontSize: 13,
           fontWeight: 600,
         },
-        data: data.districts.map((d) => `${d.district}\n Rank-${d.rank}`),
+        data: sortedDistricts.map((d) => `${d.district}\n Rank-${d.rank}`),
         axisLabel: {
           rotate: 30,
           color: isDark ? '#d1d5db' : '#374151',
@@ -157,32 +174,36 @@ export class DistrictRanking implements OnInit, OnDestroy {
           name: 'Male',
           type: 'bar',
           stack: 'enrollment',
-          data: data.districts.map((d) => d.male),
-          barWidth: 18,
+          data: sortedDistricts.map((d) => d.male),
+          barWidth: 25,
         },
         {
           name: 'Female',
           type: 'bar',
           stack: 'enrollment',
-          data: data.districts.map((d) => d.female),
+          data: sortedDistricts.map((d) => d.female),
+          barWidth: 25,
         },
         {
           name: 'Others',
           type: 'bar',
           stack: 'enrollment',
-          data: data.districts.map((d) => d.others),
+          data: sortedDistricts.map((d) => d.others),
+          barWidth: 25,
         },
         {
           name: 'Passed',
           type: 'bar',
           yAxisIndex: 1,
-          data: data.districts.map((d) => Math.round((d.passed / d.enrolled) * 100)),
+          data: sortedDistricts.map((d) => Math.round((d.passed / d.enrolled) * 100)),
+          barWidth: 25,
         },
         {
           name: 'Assessment Completed',
           type: 'bar',
           yAxisIndex: 1,
-          data: data.districts.map((d) => Math.round((d.assessmentCompleted / d.enrolled) * 100)),
+          data: sortedDistricts.map((d) => Math.round((d.assessmentCompleted / d.enrolled) * 100)),
+          barWidth: 25,
         },
       ],
     };

@@ -5,7 +5,7 @@ import { EChartsOption } from 'echarts';
 import { GradeBreakdownModel } from '../../../model';
 import { MatCardModule } from '@angular/material/card';
 import { NgxEchartsDirective } from 'ngx-echarts';
-import { selectYear } from '../../../store';
+import { selectTheme, selectYear } from '../../../store';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -20,6 +20,7 @@ export class LearnerDetails implements OnInit, OnDestroy {
   private dashboardService = inject(DashboardService);
   private store = inject(Store);
   gradeBreakDown: WritableSignal<GradeBreakdownModel[] | null> = signal(null);
+  theme: WritableSignal<string> = signal('light');
   option: WritableSignal<EChartsOption | null> = signal(null);
 
   ngOnInit(): void {
@@ -28,6 +29,16 @@ export class LearnerDetails implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((year) => {
         this.getGradeBreakDown(year);
+      });
+    this.store
+      .select(selectTheme)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((theme) => {
+        this.theme.set(theme);
+        const data = this.gradeBreakDown();
+        if (data) {
+          this.buildChartOption(data, theme);
+        }
       });
   }
 
@@ -38,18 +49,18 @@ export class LearnerDetails implements OnInit, OnDestroy {
       .subscribe((data) => {
         this.gradeBreakDown.set(data);
         if (data) {
-          this.buildChartOption(data);
+          this.buildChartOption(data, this.theme());
         }
       });
   }
 
-  buildChartOption(data: GradeBreakdownModel[]) {
-    const isDark = false;
+  buildChartOption(data: GradeBreakdownModel[], theme: string) {
+    const isDark = theme === 'dark';
 
     const option: EChartsOption = {
       animationDuration: 800,
       animationEasing: 'cubicOut',
-      backgroundColor: isDark ? '#1f2937' : '#ffffff',
+      backgroundColor: isDark ? '#031427' : '#f8f9ff',
       tooltip: {
         trigger: 'item',
       },

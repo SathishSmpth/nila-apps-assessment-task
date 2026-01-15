@@ -54,6 +54,7 @@ export interface DistrictsModel {
   female: number;
   others: number;
   passed: number;
+  failed: number;
   assessmentCompleted: number;
   completionRatePercent: number;
 }

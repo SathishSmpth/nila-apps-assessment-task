@@ -1,11 +1,11 @@
 import { Component, inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { DashboardService } from '../../../services/dashboard.service';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { PassStatsModel } from '../../../model';
-import { selectYear } from '../../../store';
+import { selectDistrict, selectTheme, selectYear } from '../../../store';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -20,36 +20,45 @@ export class PassPercentage implements OnInit, OnDestroy {
   private dashboardService = inject(DashboardService);
   private store = inject(Store);
   passStatsDetail: WritableSignal<PassStatsModel | null> = signal(null);
+  theme: WritableSignal<string> = signal('light');
   option: WritableSignal<any> = signal(null);
 
   ngOnInit(): void {
-    this.store
-      .select(selectYear)
+    combineLatest([
+      this.store.select(selectYear),
+      this.store.select(selectDistrict),
+      this.store.select(selectTheme),
+    ])
       .pipe(takeUntil(this.destroy$))
-      .subscribe((year) => {
-        this.getPassStats(year);
-      });
-  }
-
-  getPassStats(year: string) {
-    this.dashboardService
-      .getPassStats(year)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.passStatsDetail.set(data);
+      .subscribe(([year, district, theme]) => {
+        this.theme.set(theme);
+        this.getPassStats(year, district);
+        const data = this.passStatsDetail();
         if (data) {
-          this.option.set(this.buildChartOption(data));
+          this.buildChartOption(data, theme);
         }
       });
   }
 
-  buildChartOption(data: PassStatsModel) {
-    const isDark = false;
+  getPassStats(year: string, district: string) {
+    this.dashboardService
+      .getPassStats(year, district)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.passStatsDetail.set(data);
+        if (data) {
+          this.buildChartOption(data, this.theme());
+        }
+      });
+  }
 
-    return {
+  buildChartOption(data: PassStatsModel, theme: string) {
+    const isDark = theme === 'dark';
+
+    const option = {
       animationDuration: 800,
       animationEasing: 'cubicOut',
-      backgroundColor: isDark ? '#1f2937' : '#ffffff',
+      backgroundColor: isDark ? '#031427' : '#f8f9ff',
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
@@ -129,6 +138,8 @@ export class PassPercentage implements OnInit, OnDestroy {
         },
       ],
     };
+
+    this.option.set(option);
   }
 
   ngOnDestroy(): void {

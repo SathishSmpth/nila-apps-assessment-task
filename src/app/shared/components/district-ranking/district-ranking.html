@@ -5,7 +5,7 @@
     <div>
       <mat-form-field appearance="outline" class="district">
         <mat-select [formControl]="formControl">
-          @for (item of ["Rank By Enrollment"]; track item) {
+          @for (item of ["Rank By Enrollment","Rank By Pass %"]; track item) {
           <mat-option [value]="item">{{ item }}</mat-option>
           } @empty {
           <mat-option value="">There are no items.</mat-option>

@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { NgxEchartsDirective } from 'ngx-echarts';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { DashboardService } from '../../../services/dashboard.service';
 import { AssessmentScoreModel } from '../../../model';
 import { EChartsOption } from 'echarts';
 import { Store } from '@ngrx/store';
-import { selectYear } from '../../../store';
+import { selectDistrict, selectTheme, selectYear } from '../../../store';
 
 @Component({
   selector: 'app-avg-assessment-score',
@@ -21,36 +21,45 @@ export class AvgAssessmentScore implements OnInit, OnDestroy {
   private dashboardService = inject(DashboardService);
   private store = inject(Store);
   assessmentScore: WritableSignal<AssessmentScoreModel | null> = signal(null);
+  theme: WritableSignal<string> = signal('light');
   option: WritableSignal<EChartsOption | null> = signal(null);
 
   ngOnInit(): void {
-    this.store
-      .select(selectYear)
+    combineLatest([
+      this.store.select(selectYear),
+      this.store.select(selectDistrict),
+      this.store.select(selectTheme),
+    ])
       .pipe(takeUntil(this.destroy$))
-      .subscribe((year) => {
-        this.getAvgAssessmentScore(year);
-      });
-  }
-
-  getAvgAssessmentScore(year: string) {
-    this.dashboardService
-      .getAvgAssessmentScore(year)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.assessmentScore.set(data);
+      .subscribe(([year, district, theme]) => {
+        this.theme.set(theme);
+        this.getAvgAssessmentScore(year, district);
+        const data = this.assessmentScore();
         if (data) {
-          this.buildChartOption(data);
+          this.buildChartOption(data, theme);
         }
       });
   }
 
-  buildChartOption(data: AssessmentScoreModel) {
-    const isDark = false;
+  getAvgAssessmentScore(year: string, district: string) {
+    this.dashboardService
+      .getAvgAssessmentScore(year, district)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.assessmentScore.set(data);
+        if (data) {
+          this.buildChartOption(data, this.theme());
+        }
+      });
+  }
+
+  buildChartOption(data: AssessmentScoreModel, theme: string) {
+    const isDark = theme === 'dark';
 
     const option: EChartsOption = {
       animationDuration: 800,
       animationEasing: 'cubicOut',
-      backgroundColor: isDark ? '#1f2937' : '#ffffff',
+      backgroundColor: isDark ? '#031427' : '#f8f9ff',
       tooltip: {
         trigger: 'item',
       },

@@ -14,7 +14,7 @@ import { DashboardService } from '../../../services/dashboard.service';
 import { startWith, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
-import { setYear, toggleTheme } from '../../../store';
+import { selectTheme, setDistrict, setYear, toggleTheme } from '../../../store';
 
 @Component({
   selector: 'app-header',
@@ -46,6 +46,7 @@ export class Header implements OnInit {
   private store = inject(Store);
 
   districtsOptions: WritableSignal<any[]> = signal([]);
+  theme = signal<'light' | 'dark'>('light');
 
   filterForm!: FormGroup;
 
@@ -54,6 +55,10 @@ export class Header implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.store
+      .select(selectTheme)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((theme) => this.theme.set(theme));
   }
 
   initializeForm() {
@@ -67,6 +72,7 @@ export class Header implements OnInit {
     });
 
     const year$ = this.filterForm.get('year');
+    const district$ = this.filterForm.get('district');
 
     if (year$) {
       year$.valueChanges
@@ -77,6 +83,16 @@ export class Header implements OnInit {
           if (startYear && endYear) {
             this.store.dispatch(setYear({ year: endYear.toString() }));
             this.getDistricts(endYear.toString());
+          }
+        });
+    }
+
+    if (district$) {
+      district$?.valueChanges
+        .pipe(startWith(district$.value), takeUntil(this.destroy$))
+        .subscribe((value) => {
+          if (value) {
+            this.store.dispatch(setDistrict({ district: value }));
           }
         });
     }

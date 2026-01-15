@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
-import { selectTheme } from './store';
+import { selectTheme, setTheme } from './store';
 
 @Component({
   selector: 'app-root',
@@ -17,14 +17,26 @@ export class App implements OnInit, OnDestroy {
   private store = inject(Store);
 
   ngOnInit(): void {
+    // Initialize theme from persisted value or OS preference.
+    const persisted = (localStorage.getItem('theme') as 'light' | 'dark' | null) ?? null;
+    const preferred: 'light' | 'dark' =
+      persisted ??
+      (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    this.store.dispatch(setTheme({ theme: preferred }));
+
     this.store
       .select(selectTheme)
       .pipe(takeUntil(this.destroy$))
       .subscribe((theme) => {
-        document.body.classList.remove('light', 'dark');
-        document.body.classList.add(theme);
+        localStorage.setItem('theme', theme);
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(theme);
       });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

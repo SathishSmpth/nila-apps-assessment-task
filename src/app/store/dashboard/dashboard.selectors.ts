@@ -6,3 +6,5 @@ export const selectDashboardState = createFeatureSelector<DashboardState>('dashb
 export const selectYear = createSelector(selectDashboardState, (state) => state.year);
 
 export const selectTheme = createSelector(selectDashboardState, (state) => state.theme);
+
+export const selectDistrict = createSelector(selectDashboardState, (state) => state.district);

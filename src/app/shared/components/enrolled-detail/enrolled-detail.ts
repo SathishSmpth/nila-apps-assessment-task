@@ -1,8 +1,8 @@
 import { Component, inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { DashboardService } from '../../../services/dashboard.service';
 import { Store } from '@ngrx/store';
-import { selectYear } from '../../../store';
+import { selectDistrict, selectYear } from '../../../store';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -21,17 +21,16 @@ export class EnrolledDetail implements OnInit, OnDestroy {
   enrolledDetails: WritableSignal<any> = signal([]);
 
   ngOnInit(): void {
-    this.store
-      .select(selectYear)
+    combineLatest([this.store.select(selectYear), this.store.select(selectDistrict)])
       .pipe(takeUntil(this.destroy$))
-      .subscribe((year) => {
-        this.getEnrolledDetails(year);
+      .subscribe(([year, district]) => {
+        this.getEnrolledDetails(year, district);
       });
   }
 
-  getEnrolledDetails(year: string) {
+  getEnrolledDetails(year: string, district: string) {
     this.dashboardService
-      .getEnrolledDetails(year)
+      .getEnrolledDetails(year, district)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         this.enrolledDetails.set(data);

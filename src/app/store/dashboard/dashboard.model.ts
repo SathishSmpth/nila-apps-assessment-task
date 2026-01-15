@@ -1,6 +1,6 @@
 export interface DashboardState {
   year: string;
   monthlyOrYearly: 'Monthly' | 'Yearly';
-  districts: string;
+  district: string;
   theme: 'light' | 'dark';
 }

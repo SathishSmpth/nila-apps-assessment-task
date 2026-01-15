@@ -5,16 +5,6 @@
 
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: theme.$primary-palette,
-        tertiary: theme.$primary-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
 }
 
 body {
@@ -25,12 +15,34 @@ body {
   height: 100%;
 }
 
-body.dark {
-  color-scheme: dark;
+html.light {
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: theme.$primary-palette,
+        tertiary: theme.$primary-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+      theme-type: light,
+    )
+  );
 }
 
-body.light {
-  color-scheme: light;
+html.dark {
+  color-scheme: dark;
+  @include mat.theme(
+    (
+      color: (
+        primary: theme.$primary-palette,
+        tertiary: theme.$primary-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+      theme-type: dark,
+    )
+  );
 }
 
 .dark {

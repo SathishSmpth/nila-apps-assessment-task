@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { DashboardService } from '../../../services/dashboard.service';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { CourseProgressModel } from '../../../model';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { Store } from '@ngrx/store';
-import { selectTheme, selectYear } from '../../../store';
+import { selectDistrict, selectTheme, selectYear } from '../../../store';
 
 @Component({
   selector: 'app-course-progress-rate',
@@ -24,48 +24,60 @@ export class CourseProgressRate implements OnInit {
   option: WritableSignal<any> = signal(null);
 
   ngOnInit(): void {
-    this.store
-      .select(selectYear)
+    combineLatest([
+      this.store.select(selectYear),
+      this.store.select(selectDistrict),
+      this.store.select(selectTheme),
+    ])
       .pipe(takeUntil(this.destroy$))
-      .subscribe((year) => {
-        this.getProgressRate(year);
-      });
-
-    this.store
-      .select(selectTheme)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((theme) => {
+      .subscribe(([year, district, theme]) => {
         this.theme.set(theme);
+        this.getProgressRate(year, district);
         const data = this.courseProgressDetail();
         if (data) {
-          this.buildChartOption(data, theme);
+          this.buildChartOption(data, theme, district);
         }
       });
   }
 
-  getProgressRate(year: string) {
+  getProgressRate(year: string, district: string) {
     this.dashboardService
       .getCourseProgress(year)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.courseProgressDetail.set(data);
         if (data) {
-          this.buildChartOption(data, this.theme());
+          this.buildChartOption(data, this.theme(), district);
         }
       });
   }
 
-  buildChartOption(data: CourseProgressModel[], theme: string) {
-    const isDark = theme == 'dark';
+  buildChartOption(data: CourseProgressModel[], theme: string, district: string) {
+    const isDark = theme === 'dark';
+    const highlightIndex =
+      district && district !== 'All District' ? data.findIndex((d) => d.district === district) : -1;
+
+    const getBarData = (key: 'below' | 'average' | 'good', color: string) =>
+      data.map((d, index) => ({
+        value: d[key],
+        itemStyle: {
+          color,
+          opacity: highlightIndex === -1 || index === highlightIndex ? 1 : 0.25,
+          borderWidth: index === highlightIndex ? 2 : 0,
+          borderColor: isDark ? '#ffffff' : '#111827',
+        },
+      }));
 
     const option = {
       animationDuration: 800,
       animationEasing: 'cubicOut',
-      backgroundColor: isDark ? '#000' : '#fff',
+      backgroundColor: isDark ? '#031427' : '#f8f9ff',
+
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
       },
+
       legend: {
         top: 0,
         left: 'right',
@@ -76,12 +88,14 @@ export class CourseProgressRate implements OnInit {
           color: isDark ? '#e5e7eb' : '#374151',
         },
       },
+
       grid: {
         top: 50,
         left: '3%',
         right: '4%',
         bottom: '8%',
       },
+
       xAxis: {
         type: 'category',
         name: 'Districts',
@@ -91,7 +105,7 @@ export class CourseProgressRate implements OnInit {
           fontSize: 13,
           fontWeight: 600,
         },
-        data: data?.map((d) => d.district),
+        data: data.map((d) => d.district),
         axisLabel: {
           rotate: 30,
           color: isDark ? '#d1d5db' : '#374151',
@@ -102,6 +116,7 @@ export class CourseProgressRate implements OnInit {
           },
         },
       },
+
       yAxis: {
         type: 'value',
         max: 100,
@@ -123,27 +138,25 @@ export class CourseProgressRate implements OnInit {
           },
         },
       },
+
       series: [
         {
           name: 'Below',
           type: 'bar',
           barWidth: '25%',
-          data: data?.map((d) => d.below),
-          itemStyle: { color: '#f87171' },
+          data: getBarData('below', '#f87171'),
         },
         {
           name: 'Average',
           type: 'bar',
           barWidth: '25%',
-          data: data?.map((d) => d.average),
-          itemStyle: { color: '#34d399' },
+          data: getBarData('average', '#34d399'),
         },
         {
           name: 'Good',
           type: 'bar',
           barWidth: '25%',
-          data: data?.map((d) => d.good),
-          itemStyle: { color: '#60a5fa' },
+          data: getBarData('good', '#60a5fa'),
         },
       ],
     };

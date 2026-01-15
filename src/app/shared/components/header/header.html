@@ -1,6 +1,15 @@
 <div class="flex justify-between items-center">
   <div class="text-xl font-bold">Dashboard</div>
-  <div class="flex">
+  <div class="flex align-center ms-1 md:hidden">
+    <button mat-icon-button class="theme-toggle" (click)="toggle()" aria-label="Toggle theme">
+      @if (theme(); as theme) {
+      <mat-icon>dark_mode</mat-icon>
+      } @else {
+      <mat-icon>light_mode</mat-icon>
+      }
+    </button>
+  </div>
+  <div class="hidden md:flex">
     <form [formGroup]="filterForm">
       <mat-button-toggle-group
         class="outline-toggle me-1"
@@ -44,9 +53,66 @@
       </mat-form-field>
     </form>
     <div class="flex align-center ms-1">
-      <button mat-icon-button (click)="toggle()" aria-label="Toggle dark mode">
-        <mat-slide-toggle></mat-slide-toggle>
+      <button mat-icon-button class="theme-toggle" (click)="toggle()" aria-label="Toggle theme">
+        @if (theme(); as theme) {
+        <mat-icon>dark_mode</mat-icon>
+        } @else {
+        <mat-icon>light_mode</mat-icon>
+        }
       </button>
     </div>
+  </div>
+</div>
+<div class="flex md:hidden justify-end mt-1">
+  <form [formGroup]="filterForm">
+    <mat-button-toggle-group
+      class="outline-toggle me-1"
+      formControlName="monthOrYear"
+      appearance="standard"
+      aria-label="View mode"
+    >
+      <mat-button-toggle value="monthly">Monthly</mat-button-toggle>
+      <mat-button-toggle value="yearly">Yearly</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <mat-form-field appearance="outline" class="me-1 date-range">
+      <mat-date-range-input
+        [rangePicker]="picker"
+        formGroupName="year"
+        [min]="minDate"
+        [max]="maxDate"
+      >
+        <input matStartDate placeholder="Start Year" formControlName="startYear" />
+        <input matEndDate placeholder="End Year" formControlName="endYear" />
+      </mat-date-range-input>
+
+      <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+
+      <mat-date-range-picker
+        #picker
+        startView="multi-year"
+        (yearSelected)="yearSelected($event, picker)"
+      >
+      </mat-date-range-picker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="district">
+      <mat-select formControlName="district">
+        @for (item of districtsOptions(); track item) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+        } @empty {
+        <mat-option value="">There are no items.</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+  <div class="hidden align-center ms-1 md:flex">
+    <button mat-icon-button class="theme-toggle" (click)="toggle()" aria-label="Toggle theme">
+      @if (theme(); as theme) {
+      <mat-icon>dark_mode</mat-icon>
+      } @else {
+      <mat-icon>light_mode</mat-icon>
+      }
+    </button>
   </div>
 </div>

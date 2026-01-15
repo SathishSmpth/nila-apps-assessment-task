@@ -29,8 +29,24 @@ export class DashboardService {
     );
   }
 
-  getEnrolledDetails(year: string) {
-    return this.getDashboardData(year).pipe(map(({ summary }: DashboardModel) => summary));
+  getEnrolledDetails(year: string, district?: string) {
+    return this.getDashboardData(year).pipe(
+      map(({ summary, districtRanking }: DashboardModel) => {
+        if (district !== 'All District') {
+          const selectedDistrict = districtRanking?.districts?.find((d) => d.district === district);
+
+          return {
+            totalLearners: selectedDistrict?.enrolled,
+            male: selectedDistrict?.male,
+            female: selectedDistrict?.female,
+            others: selectedDistrict?.others,
+            activeLearners: '--',
+            engagedLearners: '--',
+          };
+        }
+        return summary;
+      })
+    );
   }
 
   getCourseProgress(year: string): Observable<CourseProgressModel[]> {
@@ -39,13 +55,40 @@ export class DashboardService {
     );
   }
 
-  getPassStats(year: string): Observable<PassStatsModel> {
-    return this.getDashboardData(year).pipe(map(({ passStats }: DashboardModel) => passStats));
+  getPassStats(year: string, district?: string): Observable<PassStatsModel> {
+    return this.getDashboardData(year).pipe(
+      map(({ passStats, districtRanking }: DashboardModel) => {
+        if (district !== 'All District') {
+          const selectedDistrict = districtRanking?.districts?.find((d) => d.district === district);
+          if (selectedDistrict) {
+            return {
+              overallLearners: selectedDistrict?.enrolled,
+              assessmentTaken: selectedDistrict?.assessmentCompleted,
+              passed: selectedDistrict?.passed,
+              failed: selectedDistrict?.failed,
+            };
+          }
+        }
+        return passStats;
+      })
+    );
   }
 
-  getAvgAssessmentScore(year: string): Observable<AssessmentScoreModel> {
+  getAvgAssessmentScore(year: string, district?: string): Observable<AssessmentScoreModel> {
     return this.getDashboardData(year).pipe(
-      map(({ assessmentCompletion }: DashboardModel) => assessmentCompletion)
+      map(({ assessmentCompletion, districtRanking }: DashboardModel) => {
+        if (district !== 'All District') {
+          const selectedDistrict = districtRanking?.districts?.find((d) => d.district === district);
+          if (selectedDistrict) {
+            return {
+              completedPercent: selectedDistrict?.completionRatePercent,
+              notCompletedPercent: 100 - selectedDistrict?.completionRatePercent,
+            };
+          }
+        }
+
+        return assessmentCompletion;
+      })
     );
   }
 
@@ -55,9 +98,23 @@ export class DashboardService {
     );
   }
 
-  getDistrictRanking(year: string): Observable<DistrictRankingModel> {
+  getDistrictRanking(year: string, district?: string): Observable<DistrictRankingModel> {
     return this.getDashboardData(year).pipe(
-      map(({ districtRanking }: DashboardModel) => districtRanking)
+      map(({ districtRanking }: DashboardModel) => {
+        if (district !== 'All District') {
+          const selectedDistrict = districtRanking?.districts?.filter(
+            (d) => d.district === district
+          );
+          if (selectedDistrict) {
+            return {
+              ...districtRanking,
+              districts: selectedDistrict,
+            };
+          }
+        }
+
+        return districtRanking;
+      })
     );
   }
 }
