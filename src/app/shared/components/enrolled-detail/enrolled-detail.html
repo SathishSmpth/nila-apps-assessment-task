@@ -1,0 +1,49 @@
+@if (enrolledDetails(); as details) {
+<div>
+  <mat-card class="enrolled-card" appearance="outlined">
+    <mat-card-content>
+      <div class="grid grid-cols-6 gap-2">
+        <div>
+          <div>Total Learner Enrolled</div>
+          <div class="text-lg">{{ details.totalLearners }}</div>
+        </div>
+        <div class="flex gap-2">
+          <div>
+            <mat-icon>male</mat-icon>
+          </div>
+          <div>
+            <div>Male</div>
+            <div class="text-lg">{{ details.male }}</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <div>
+            <mat-icon>female</mat-icon>
+          </div>
+          <div>
+            <div>Female</div>
+            <div class="text-lg">{{ details.female }}</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <div>
+            <mat-icon>transgender</mat-icon>
+          </div>
+          <div>
+            <div>Others</div>
+            <div class="text-lg">{{ details.others }}</div>
+          </div>
+        </div>
+        <div>
+          <div>Active Learners</div>
+          <div class="text-lg">{{ details.activeLearners }}</div>
+        </div>
+        <div>
+          <div>Engaged Learners</div>
+          <div class="text-lg">{{ details.engagedLearners }}</div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+}

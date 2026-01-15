@@ -1,0 +1,22 @@
+.outline-toggle.mat-button-toggle-group {
+  border-radius: 5px;
+  overflow: hidden;
+  & .mat-button-toggle {
+    height: 100%;
+    align-content: center;
+  }
+}
+
+::ng-deep {
+  .district .mat-mdc-text-field-wrapper,
+  .date-range .mat-mdc-text-field-wrapper {
+    height: 40px;
+    height: 41px;
+    align-items: center;
+  }
+
+  .date-range .mat-mdc-form-field-subscript-wrapper,
+  .district .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}

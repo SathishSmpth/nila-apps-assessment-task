@@ -1,0 +1,14 @@
+@if (gradeBreakDown(); as details) {
+<div>
+  <mat-card class="grade-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-subtitle>Learners Details Breakdown</mat-card-subtitle>
+    </mat-card-header>
+    @if (option(); as eChartOption) {
+    <mat-card-content>
+      <div echarts [options]="eChartOption" [autoResize]="true"></div>
+    </mat-card-content>
+    }
+  </mat-card>
+</div>
+}

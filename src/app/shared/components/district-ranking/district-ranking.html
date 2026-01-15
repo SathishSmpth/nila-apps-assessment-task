@@ -1,0 +1,23 @@
+@if (districtRanking(); as details) {
+<div>
+  <div class="flex justify-between">
+    <div class="text-xl font-bold">District Ranking</div>
+    <div>
+      <mat-form-field appearance="outline" class="district">
+        <mat-select [formControl]="formControl">
+          @for (item of ["Rank By Enrollment"]; track item) {
+          <mat-option [value]="item">{{ item }}</mat-option>
+          } @empty {
+          <mat-option value="">There are no items.</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <mat-card class="course-progress-card mt-2" appearance="outlined">
+    <mat-card-content>
+      <div echarts [options]="option()" [autoResize]="true" [loading]="!option" class="chart"></div>
+    </mat-card-content>
+  </mat-card>
+</div>
+}

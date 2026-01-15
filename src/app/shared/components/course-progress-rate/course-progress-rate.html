@@ -1,0 +1,12 @@
+@if (courseProgressDetail(); as details) {
+<div>
+  <mat-card class="course-progress-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-subtitle>Course Progress Rate</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div echarts [options]="option()" [autoResize]="true" [loading]="!option" class="chart"></div>
+    </mat-card-content>
+  </mat-card>
+</div>
+}
