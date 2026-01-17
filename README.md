@@ -55,3 +55,8 @@ Then open `http://localhost:4200/`.
   - Served URL in the app: `assets/dashboard.json`
 - **Expected shape**: The top-level JSON is expected to be keyed by **year** (string), and the app reads `data[year]`.
 - **No backend required**: All data is currently static and served from the app assets.
+
+## Note:
+If a Vite dev overlay error appears, the app still runs correctly at http://localhost:4200.
+This is a known Angular + Vite dev-server issue.
+
